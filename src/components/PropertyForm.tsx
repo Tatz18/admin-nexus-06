@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -6,12 +6,14 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
+import { PhotoUpload } from "./PhotoUpload";
 
 interface PropertyFormProps {
   onSuccess: () => void;
+  editProperty?: any;
 }
 
-export const PropertyForm = ({ onSuccess }: PropertyFormProps) => {
+export const PropertyForm = ({ onSuccess, editProperty }: PropertyFormProps) => {
   const [formData, setFormData] = useState({
     title: "",
     description: "",
@@ -27,38 +29,75 @@ export const PropertyForm = ({ onSuccess }: PropertyFormProps) => {
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
 
+  // Initialize form with edit data
+  useEffect(() => {
+    if (editProperty) {
+      setFormData({
+        title: editProperty.title || "",
+        description: editProperty.description || "",
+        price: editProperty.price ? editProperty.price.toString() : "",
+        location: editProperty.location || "",
+        bedrooms: editProperty.bedrooms ? editProperty.bedrooms.toString() : "",
+        bathrooms: editProperty.bathrooms ? editProperty.bathrooms.toString() : "",
+        square_feet: editProperty.square_feet ? editProperty.square_feet.toString() : "",
+        property_type: editProperty.property_type || "",
+        status: editProperty.status || "available",
+        image_url: editProperty.image_url || "",
+      });
+    }
+  }, [editProperty]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
 
     try {
-      const { error } = await supabase.from("properties").insert({
+      const propertyData = {
         ...formData,
-        user_id: '5dc24f73-992e-4717-9d3e-679827894ec5', // Fixed admin user ID
+        user_id: 'admin', // SimpleAuth admin identifier
         price: formData.price ? parseFloat(formData.price) : null,
         bedrooms: formData.bedrooms ? parseInt(formData.bedrooms) : null,
         bathrooms: formData.bathrooms ? parseInt(formData.bathrooms) : null,
         square_feet: formData.square_feet ? parseInt(formData.square_feet) : null,
-      });
+      };
+
+      let error;
+      if (editProperty) {
+        // Update existing property
+        const { error: updateError } = await supabase
+          .from("properties")
+          .update(propertyData)
+          .eq('id', editProperty.id);
+        error = updateError;
+      } else {
+        // Create new property
+        const { error: insertError } = await supabase
+          .from("properties")
+          .insert(propertyData);
+        error = insertError;
+      }
 
       if (error) throw error;
 
-      setFormData({
-        title: "",
-        description: "",
-        price: "",
-        location: "",
-        bedrooms: "",
-        bathrooms: "",
-        square_feet: "",
-        property_type: "",
-        status: "available",
-        image_url: "",
-      });
+      // Reset form only if creating new property
+      if (!editProperty) {
+        setFormData({
+          title: "",
+          description: "",
+          price: "",
+          location: "",
+          bedrooms: "",
+          bathrooms: "",
+          square_feet: "",
+          property_type: "",
+          status: "available",
+          image_url: "",
+        });
+      }
 
       toast({
         title: "Success",
-        description: "Property added successfully",
+        description: editProperty ? "Property updated successfully" : "Property added successfully",
       });
       onSuccess();
     } catch (error: any) {
@@ -176,15 +215,10 @@ export const PropertyForm = ({ onSuccess }: PropertyFormProps) => {
         </div>
       </div>
 
-      <div className="space-y-2">
-        <Label htmlFor="image_url">Image URL</Label>
-        <Input
-          id="image_url"
-          value={formData.image_url}
-          onChange={(e) => handleInputChange("image_url", e.target.value)}
-          placeholder="Enter image URL"
-        />
-      </div>
+      <PhotoUpload
+        currentImageUrl={formData.image_url}
+        onUploadSuccess={(url) => handleInputChange("image_url", url)}
+      />
 
       <div className="space-y-2">
         <Label htmlFor="description">Description</Label>
@@ -198,7 +232,10 @@ export const PropertyForm = ({ onSuccess }: PropertyFormProps) => {
       </div>
 
       <Button type="submit" disabled={loading} className="w-full">
-        {loading ? "Adding Property..." : "Add Property"}
+        {loading 
+          ? (editProperty ? "Updating Property..." : "Adding Property...") 
+          : (editProperty ? "Update Property" : "Add Property")
+        }
       </Button>
     </form>
   );

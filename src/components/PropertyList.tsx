@@ -9,9 +9,10 @@ import { Trash2, Edit, Home, MapPin, Bed, Bath, Square } from "lucide-react";
 interface PropertyListProps {
   properties: any[];
   onUpdate: () => void;
+  onEdit: (property: any) => void;
 }
 
-export const PropertyList = ({ properties, onUpdate }: PropertyListProps) => {
+export const PropertyList = ({ properties, onUpdate, onEdit }: PropertyListProps) => {
   const [loading, setLoading] = useState<string | null>(null);
   const { toast } = useToast();
 
@@ -152,6 +153,7 @@ export const PropertyList = ({ properties, onUpdate }: PropertyListProps) => {
                 variant="outline"
                 size="sm"
                 className="flex-1"
+                onClick={() => onEdit(property)}
               >
                 <Edit className="h-4 w-4 mr-2" />
                 Edit

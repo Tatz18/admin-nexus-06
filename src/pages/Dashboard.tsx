@@ -16,6 +16,7 @@ const Dashboard = () => {
   const [activeTab, setActiveTab] = useState("properties");
   const [dashboardLoading, setDashboardLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
+  const [editingProperty, setEditingProperty] = useState<any>(null);
   const navigate = useNavigate();
   const { toast } = useToast();
   const { isAuthenticated, signOut } = useSimpleAuth();
@@ -153,22 +154,34 @@ const Dashboard = () => {
                 <h2 className="text-xl font-semibold">Properties Management</h2>
                 <p className="text-muted-foreground">Manage your property listings</p>
               </div>
-              <Button onClick={() => setShowForm(!showForm)}>
+              <Button onClick={() => {
+                setShowForm(!showForm);
+                setEditingProperty(null);
+              }}>
                 <Plus className="h-4 w-4 mr-2" />
                 {showForm ? "Hide Form" : "Add Property"}
               </Button>
             </div>
 
-            {showForm && (
+            {(showForm || editingProperty) && (
               <PropertyForm 
+                editProperty={editingProperty}
                 onSuccess={() => {
                   setShowForm(false);
+                  setEditingProperty(null);
                   fetchProperties();
                 }} 
               />
             )}
 
-            <PropertyList properties={properties} onUpdate={fetchProperties} />
+            <PropertyList 
+              properties={properties} 
+              onUpdate={fetchProperties}
+              onEdit={(property) => {
+                setEditingProperty(property);
+                setShowForm(false);
+              }}
+            />
           </TabsContent>
 
           <TabsContent value="blogs" className="space-y-6">
