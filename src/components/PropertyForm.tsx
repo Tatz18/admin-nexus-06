@@ -54,7 +54,7 @@ export const PropertyForm = ({ onSuccess, editProperty }: PropertyFormProps) => 
     try {
       const propertyData = {
         ...formData,
-        user_id: 'admin', // SimpleAuth admin identifier
+        user_id: '5dc24f73-992e-4717-9d3e-679827894ec5', // Existing admin user ID
         price: formData.price ? parseFloat(formData.price) : null,
         bedrooms: formData.bedrooms ? parseInt(formData.bedrooms) : null,
         bathrooms: formData.bathrooms ? parseInt(formData.bathrooms) : null,
