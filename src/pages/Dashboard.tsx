@@ -164,20 +164,26 @@ const Dashboard = () => {
             </div>
 
             {(showForm || editingProperty) && (
-              <PropertyForm 
-                editProperty={editingProperty}
-                onSuccess={() => {
-                  setShowForm(false);
-                  setEditingProperty(null);
-                  fetchProperties();
-                }} 
-              />
+              <div>
+                <h3 className="text-lg font-semibold mb-4">
+                  {editingProperty ? "Edit Property" : "Add New Property"}
+                </h3>
+                <PropertyForm 
+                  editProperty={editingProperty}
+                  onSuccess={() => {
+                    setShowForm(false);
+                    setEditingProperty(null);
+                    fetchProperties();
+                  }} 
+                />
+              </div>
             )}
 
             <PropertyList 
               properties={properties} 
               onUpdate={fetchProperties}
               onEdit={(property) => {
+                console.log("Editing property:", property);
                 setEditingProperty(property);
                 setShowForm(false);
               }}
