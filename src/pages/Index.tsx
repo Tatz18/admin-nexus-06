@@ -1,208 +1,110 @@
-import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
-import { StatsCard } from "@/components/dashboard/StatsCard";
-import { RecentActivity } from "@/components/dashboard/RecentActivity";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { 
-  Users, 
-  ShoppingCart, 
-  DollarSign, 
-  TrendingUp,
-  Package,
-  Eye
-} from "lucide-react";
-import { 
-  BarChart, 
-  Bar, 
-  XAxis, 
-  YAxis, 
-  CartesianGrid, 
-  Tooltip, 
-  ResponsiveContainer,
-  LineChart,
-  Line
-} from "recharts";
+import { Link } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Home, FileText, Users, LogIn } from "lucide-react";
 
-const statsData = [
-  {
-    title: "Total Users",
-    value: "12,543", 
-    change: "12%",
-    trend: "up" as const,
-    icon: Users,
-    variant: "default" as const
-  },
-  {
-    title: "Orders",
-    value: "3,429",
-    change: "8%",
-    trend: "up" as const,
-    icon: ShoppingCart,
-    variant: "success" as const
-  },
-  {
-    title: "Revenue",
-    value: "$54,672",
-    change: "15%", 
-    trend: "up" as const,
-    icon: DollarSign,
-    variant: "default" as const
-  },
-  {
-    title: "Growth",
-    value: "23.4%",
-    change: "3%",
-    trend: "up" as const,
-    icon: TrendingUp,
-    variant: "success" as const
-  }
-];
-
-const chartData = [
-  { name: "Jan", users: 1200, orders: 240 },
-  { name: "Feb", users: 1890, orders: 398 },
-  { name: "Mar", users: 2390, orders: 480 },
-  { name: "Apr", users: 3490, orders: 540 },
-  { name: "May", users: 4000, orders: 620 },
-  { name: "Jun", users: 4200, orders: 680 }
-];
-
-const revenueData = [
-  { name: "Jan", revenue: 12000 },
-  { name: "Feb", revenue: 19000 },
-  { name: "Mar", revenue: 15000 },
-  { name: "Apr", revenue: 25000 },
-  { name: "May", revenue: 28000 },
-  { name: "Jun", revenue: 32000 }
-];
 
 const Index = () => {
   return (
-    <DashboardLayout>
-      <div className="space-y-6">
-        {/* Page Header */}
-        <div>
-          <h1 className="text-3xl font-bold">Dashboard</h1>
-          <p className="text-muted-foreground mt-2">
-            Welcome back! Here's what's happening with your business today.
+    <div className="min-h-screen bg-gradient-to-br from-primary/5 to-accent/5">
+      {/* Header */}
+      <header className="bg-card border-b px-6 py-4">
+        <div className="flex items-center justify-between max-w-4xl mx-auto">
+          <div className="flex items-center gap-2">
+            <Home className="h-6 w-6 text-primary" />
+            <h1 className="text-xl font-bold">Phoenix Real Estate</h1>
+          </div>
+          <Link to="/auth">
+            <Button>
+              <LogIn className="h-4 w-4 mr-2" />
+              Admin Login
+            </Button>
+          </Link>
+        </div>
+      </header>
+
+      {/* Main Content */}
+      <main className="max-w-4xl mx-auto px-6 py-12">
+        <div className="text-center mb-12">
+          <h2 className="text-4xl font-bold text-foreground mb-4">
+            Property Management Dashboard
+          </h2>
+          <p className="text-xl text-muted-foreground mb-8">
+            Manage your real estate listings, blogs, and business operations
           </p>
+          <Link to="/auth">
+            <Button size="lg" className="text-lg px-8 py-3">
+              Access Dashboard
+            </Button>
+          </Link>
         </div>
 
-        {/* Stats Cards */}
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-          {statsData.map((stat) => (
-            <StatsCard key={stat.title} {...stat} />
-          ))}
-        </div>
-
-        {/* Charts and Activity */}
-        <div className="grid gap-6 lg:grid-cols-7">
-          {/* Revenue Chart */}
-          <Card className="lg:col-span-4">
+        {/* Features */}
+        <div className="grid md:grid-cols-3 gap-8">
+          <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <DollarSign className="h-5 w-5 text-primary" />
-                Revenue Overview
+                <Home className="h-5 w-5 text-primary" />
+                Property Management
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <ResponsiveContainer width="100%" height={300}>
-                <LineChart data={revenueData}>
-                  <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
-                  <XAxis dataKey="name" className="text-muted-foreground" />
-                  <YAxis className="text-muted-foreground" />
-                  <Tooltip 
-                    contentStyle={{ 
-                      backgroundColor: "hsl(var(--card))",
-                      border: "1px solid hsl(var(--border))",
-                      borderRadius: "0.5rem"
-                    }}
-                  />
-                  <Line 
-                    type="monotone" 
-                    dataKey="revenue" 
-                    stroke="hsl(var(--primary))"
-                    strokeWidth={3}
-                    dot={{ fill: "hsl(var(--primary))", r: 4 }}
-                  />
-                </LineChart>
-              </ResponsiveContainer>
+              <CardDescription>
+                Add, edit, and manage your property listings with detailed information,
+                images, and pricing.
+              </CardDescription>
             </CardContent>
           </Card>
 
-          {/* Recent Activity */}
-          <div className="lg:col-span-3">
-            <RecentActivity />
-          </div>
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <FileText className="h-5 w-5 text-primary" />
+                Content Management
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <CardDescription>
+                Create and manage blog posts to engage with your audience and
+                improve SEO.
+              </CardDescription>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Users className="h-5 w-5 text-primary" />
+                Analytics Dashboard
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <CardDescription>
+                Track property performance, visitor statistics, and business
+                metrics in real-time.
+              </CardDescription>
+            </CardContent>
+          </Card>
         </div>
 
-        {/* Users and Orders Chart */}
-        <Card>
+        {/* Login Info */}
+        <Card className="mt-12 bg-muted/50">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <BarChart className="h-5 w-5 text-primary" />
-              Users & Orders Analytics
-            </CardTitle>
+            <CardTitle>Admin Access</CardTitle>
           </CardHeader>
           <CardContent>
-            <ResponsiveContainer width="100%" height={400}>
-              <BarChart data={chartData}>
-                <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
-                <XAxis dataKey="name" className="text-muted-foreground" />
-                <YAxis className="text-muted-foreground" />
-                <Tooltip 
-                  contentStyle={{ 
-                    backgroundColor: "hsl(var(--card))",
-                    border: "1px solid hsl(var(--border))",
-                    borderRadius: "0.5rem"
-                  }}
-                />
-                <Bar dataKey="users" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} />
-                <Bar dataKey="orders" fill="hsl(var(--success))" radius={[4, 4, 0, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
+            <p className="text-muted-foreground mb-4">
+              This is a secure admin dashboard for authorized personnel only.
+            </p>
+            <Link to="/auth">
+              <Button variant="outline">
+                Go to Login Page
+              </Button>
+            </Link>
           </CardContent>
         </Card>
-
-        {/* Additional Stats */}
-        <div className="grid gap-6 md:grid-cols-3">
-          <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-muted-foreground">Active Products</p>
-                  <p className="text-2xl font-bold">1,247</p>
-                </div>
-                <Package className="h-8 w-8 text-success" />
-              </div>
-            </CardContent>
-          </Card>
-          
-          <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-muted-foreground">Page Views</p>
-                  <p className="text-2xl font-bold">89,432</p>
-                </div>
-                <Eye className="h-8 w-8 text-primary" />
-              </div>
-            </CardContent>
-          </Card>
-          
-          <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-muted-foreground">Conversion Rate</p>
-                  <p className="text-2xl font-bold">3.24%</p>
-                </div>
-                <TrendingUp className="h-8 w-8 text-success" />
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      </div>
-    </DashboardLayout>
+      </main>
+    </div>
   );
 };
 
