@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -12,8 +12,14 @@ interface PhotoUploadProps {
 
 export const PhotoUpload = ({ onUploadSuccess, currentImageUrl }: PhotoUploadProps) => {
   const [uploading, setUploading] = useState(false);
-  const [previewUrl, setPreviewUrl] = useState(currentImageUrl || "");
+  const [previewUrl, setPreviewUrl] = useState("");
   const { toast } = useToast();
+
+  // Update preview when currentImageUrl changes (for editing)
+  useEffect(() => {
+    console.log("PhotoUpload - currentImageUrl:", currentImageUrl);
+    setPreviewUrl(currentImageUrl || "");
+  }, [currentImageUrl]);
 
   const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
