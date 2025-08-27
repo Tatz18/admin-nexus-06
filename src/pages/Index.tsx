@@ -8,7 +8,7 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary/5 to-accent/5">
       {/* Header */}
-      <header className="bg-card border-b px-6 py-6">
+      <header className="bg-card border-b px-6 py-3">
         <div className="flex items-center justify-between max-w-4xl mx-auto">
           <div className="flex items-center gap-2">
             <div className="bg-white/10 p-2 rounded-lg">
