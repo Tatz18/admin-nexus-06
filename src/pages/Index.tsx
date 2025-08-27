@@ -8,14 +8,14 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary/5 to-accent/5">
       {/* Header */}
-      <header className="bg-card border-b px-6 py-4">
+      <header className="bg-card border-b px-6 py-6">
         <div className="flex items-center justify-between max-w-4xl mx-auto">
           <div className="flex items-center gap-2">
             <div className="bg-white/10 p-2 rounded-lg">
               <img 
                 src="/lovable-uploads/d61cc3d8-5271-4eb9-92c5-efdda9c24652.png" 
                 alt="Phoenix Realesthatic" 
-                className="h-20 w-auto max-w-md"
+                className="h-30 w-auto max-w-md"
                 onError={(e) => {
                   console.error('Logo failed to load:', e);
                   const img = e.currentTarget;

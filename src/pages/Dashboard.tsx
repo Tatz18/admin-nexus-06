@@ -95,14 +95,14 @@ const Dashboard = () => {
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
-      <header className="bg-card border-b px-6 py-4">
+      <header className="bg-card border-b px-6 py-6">
         <div className="flex items-center justify-between max-w-7xl mx-auto">
           <div>
-            <div className="bg-white/5 p-2 rounded-lg mb-2 inline-block">
+            <div className="bg-white/5 p-3 rounded-lg mb-2 inline-block">
               <img 
                 src="/lovable-uploads/d61cc3d8-5271-4eb9-92c5-efdda9c24652.png" 
                 alt="Phoenix Realesthatic" 
-                className="h-16 w-auto max-w-sm"
+                className="h-30 w-auto max-w-sm"
                 onError={(e) => {
                   console.error('Dashboard logo failed to load:', e);
                   const img = e.currentTarget;

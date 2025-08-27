@@ -73,6 +73,9 @@ export default {
 					ring: 'hsl(var(--sidebar-ring))'
 				}
 			},
+			height: {
+				'30': '7.5rem'
+			},
 			borderRadius: {
 				lg: 'var(--radius)',
 				md: 'calc(var(--radius) - 2px)',
