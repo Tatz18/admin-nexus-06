@@ -98,7 +98,11 @@ const Dashboard = () => {
       <header className="bg-card border-b px-6 py-4">
         <div className="flex items-center justify-between max-w-7xl mx-auto">
           <div>
-            <h1 className="text-2xl font-bold">Phoenix Admin Dashboard</h1>
+            <img 
+              src="/lovable-uploads/d61cc3d8-5271-4eb9-92c5-efdda9c24652.png" 
+              alt="Phoenix Realesthatic" 
+              className="h-8"
+            />
             <p className="text-muted-foreground">Manage your properties and content</p>
           </div>
           <Button variant="outline" onClick={handleSignOut}>

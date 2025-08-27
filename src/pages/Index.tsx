@@ -11,8 +11,11 @@ const Index = () => {
       <header className="bg-card border-b px-6 py-4">
         <div className="flex items-center justify-between max-w-4xl mx-auto">
           <div className="flex items-center gap-2">
-            <Home className="h-6 w-6 text-primary" />
-            <h1 className="text-xl font-bold">Phoenix Real Estate</h1>
+            <img 
+              src="/lovable-uploads/d61cc3d8-5271-4eb9-92c5-efdda9c24652.png" 
+              alt="Phoenix Realesthatic" 
+              className="h-10"
+            />
           </div>
           <Link to="/auth">
             <Button>
