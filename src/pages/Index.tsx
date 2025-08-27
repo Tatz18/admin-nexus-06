@@ -8,10 +8,10 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary/5 to-accent/5">
       {/* Header */}
-      <header className="bg-card border-b px-6 py-3">
+      <header className="bg-card border-b px-6 py-1">
         <div className="flex items-center justify-between max-w-4xl mx-auto">
           <div className="flex items-center gap-2">
-            <div className="bg-white/10 p-2 rounded-lg">
+            <div className="bg-white/10 p-1 rounded-lg">
               <img 
                 src="/lovable-uploads/d61cc3d8-5271-4eb9-92c5-efdda9c24652.png" 
                 alt="Phoenix Realesthatic" 
@@ -29,7 +29,7 @@ const Index = () => {
             </div>
           </div>
           <Link to="/auth">
-            <Button>
+            <Button size="sm">
               <LogIn className="h-4 w-4 mr-2" />
               Admin Login
             </Button>

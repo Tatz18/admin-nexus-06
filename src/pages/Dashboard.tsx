@@ -95,10 +95,10 @@ const Dashboard = () => {
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
-      <header className="bg-card border-b px-6 py-3">
+      <header className="bg-card border-b px-6 py-1">
         <div className="flex items-center justify-between max-w-7xl mx-auto">
-          <div>
-            <div className="bg-white/5 p-2 rounded-lg mb-1 inline-block">
+          <div className="flex flex-col">
+            <div className="bg-white/5 p-1 rounded-lg inline-block">
               <img 
                 src="/lovable-uploads/d61cc3d8-5271-4eb9-92c5-efdda9c24652.png" 
                 alt="Phoenix Realesthatic" 
@@ -114,9 +114,9 @@ const Dashboard = () => {
               />
               <div className="hidden text-lg font-bold text-primary">Phoenix Realesthatic</div>
             </div>
-            <p className="text-muted-foreground text-sm">Manage your properties and content</p>
+            <p className="text-muted-foreground text-xs -mt-1">Manage your properties and content</p>
           </div>
-          <Button variant="outline" onClick={handleSignOut}>
+          <Button variant="outline" size="sm" onClick={handleSignOut}>
             <LogOut className="h-4 w-4 mr-2" />
             Sign Out
           </Button>
