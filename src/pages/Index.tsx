@@ -14,7 +14,7 @@ const Index = () => {
             <img 
               src="/lovable-uploads/d61cc3d8-5271-4eb9-92c5-efdda9c24652.png" 
               alt="Phoenix Realesthatic" 
-              className="h-10"
+              className="h-16 w-auto"
             />
           </div>
           <Link to="/auth">

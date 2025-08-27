@@ -101,7 +101,7 @@ const Dashboard = () => {
             <img 
               src="/lovable-uploads/d61cc3d8-5271-4eb9-92c5-efdda9c24652.png" 
               alt="Phoenix Realesthatic" 
-              className="h-8"
+              className="h-12 w-auto mb-2"
             />
             <p className="text-muted-foreground">Manage your properties and content</p>
           </div>
