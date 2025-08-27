@@ -11,11 +11,22 @@ const Index = () => {
       <header className="bg-card border-b px-6 py-4">
         <div className="flex items-center justify-between max-w-4xl mx-auto">
           <div className="flex items-center gap-2">
-            <img 
-              src="/lovable-uploads/d61cc3d8-5271-4eb9-92c5-efdda9c24652.png" 
-              alt="Phoenix Realesthatic" 
-              className="h-16 w-auto"
-            />
+            <div className="bg-white/10 p-2 rounded-lg">
+              <img 
+                src="/lovable-uploads/d61cc3d8-5271-4eb9-92c5-efdda9c24652.png" 
+                alt="Phoenix Realesthatic" 
+                className="h-20 w-auto max-w-md"
+                onError={(e) => {
+                  console.error('Logo failed to load:', e);
+                  const img = e.currentTarget;
+                  const fallback = img.nextElementSibling as HTMLElement;
+                  img.style.display = 'none';
+                  if (fallback) fallback.style.display = 'block';
+                }}
+                onLoad={() => console.log('Logo loaded successfully')}
+              />
+              <div className="hidden text-xl font-bold text-primary">Phoenix Realesthatic</div>
+            </div>
           </div>
           <Link to="/auth">
             <Button>

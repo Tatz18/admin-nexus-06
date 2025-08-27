@@ -98,11 +98,22 @@ const Dashboard = () => {
       <header className="bg-card border-b px-6 py-4">
         <div className="flex items-center justify-between max-w-7xl mx-auto">
           <div>
-            <img 
-              src="/lovable-uploads/d61cc3d8-5271-4eb9-92c5-efdda9c24652.png" 
-              alt="Phoenix Realesthatic" 
-              className="h-12 w-auto mb-2"
-            />
+            <div className="bg-white/5 p-2 rounded-lg mb-2 inline-block">
+              <img 
+                src="/lovable-uploads/d61cc3d8-5271-4eb9-92c5-efdda9c24652.png" 
+                alt="Phoenix Realesthatic" 
+                className="h-16 w-auto max-w-sm"
+                onError={(e) => {
+                  console.error('Dashboard logo failed to load:', e);
+                  const img = e.currentTarget;
+                  const fallback = img.nextElementSibling as HTMLElement;
+                  img.style.display = 'none';
+                  if (fallback) fallback.style.display = 'block';
+                }}
+                onLoad={() => console.log('Dashboard logo loaded successfully')}
+              />
+              <div className="hidden text-lg font-bold text-primary">Phoenix Realesthatic</div>
+            </div>
             <p className="text-muted-foreground">Manage your properties and content</p>
           </div>
           <Button variant="outline" onClick={handleSignOut}>
