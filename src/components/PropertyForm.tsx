@@ -24,27 +24,59 @@ export const PropertyForm = ({ onSuccess, editProperty }: PropertyFormProps) => 
     square_feet: "",
     property_type: "",
     status: "available",
-    image_url: "",
   });
+  const [imageUrls, setImageUrls] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
 
   // Initialize form with edit data
   useEffect(() => {
-    if (editProperty) {
-      setFormData({
-        title: editProperty.title || "",
-        description: editProperty.description || "",
-        price: editProperty.price ? editProperty.price.toString() : "",
-        location: editProperty.location || "",
-        bedrooms: editProperty.bedrooms ? editProperty.bedrooms.toString() : "",
-        bathrooms: editProperty.bathrooms ? editProperty.bathrooms.toString() : "",
-        square_feet: editProperty.square_feet ? editProperty.square_feet.toString() : "",
-        property_type: editProperty.property_type || "",
-        status: editProperty.status || "available",
-        image_url: editProperty.image_url || "",
-      });
-    }
+    const fetchPropertyImages = async () => {
+      if (editProperty) {
+        console.log("Editing property:", editProperty);
+        setFormData({
+          title: editProperty.title || "",
+          description: editProperty.description || "",
+          price: editProperty.price ? editProperty.price.toString() : "",
+          location: editProperty.location || "",
+          bedrooms: editProperty.bedrooms ? editProperty.bedrooms.toString() : "",
+          bathrooms: editProperty.bathrooms ? editProperty.bathrooms.toString() : "",
+          square_feet: editProperty.square_feet ? editProperty.square_feet.toString() : "",
+          property_type: editProperty.property_type || "",
+          status: editProperty.status || "available",
+        });
+        
+        // Fetch all images for this property
+        const { data: images, error } = await supabase
+          .from('property_images')
+          .select('*')
+          .eq('property_id', editProperty.id)
+          .order('display_order', { ascending: true });
+          
+        if (images && !error) {
+          setImageUrls(images.map(img => img.image_url));
+        } else if (editProperty.image_url) {
+          // Fallback to legacy single image
+          setImageUrls([editProperty.image_url]);
+        }
+      } else {
+        // Reset form for new property
+        setFormData({
+          title: "",
+          description: "",
+          price: "",
+          location: "",
+          bedrooms: "",
+          bathrooms: "",
+          square_feet: "",
+          property_type: "",
+          status: "available",
+        });
+        setImageUrls([]);
+      }
+    };
+
+    fetchPropertyImages();
   }, [editProperty]);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -59,25 +91,59 @@ export const PropertyForm = ({ onSuccess, editProperty }: PropertyFormProps) => 
         bedrooms: formData.bedrooms ? parseInt(formData.bedrooms) : null,
         bathrooms: formData.bathrooms ? parseInt(formData.bathrooms) : null,
         square_feet: formData.square_feet ? parseInt(formData.square_feet) : null,
+        image_url: imageUrls.length > 0 ? imageUrls[0] : null, // Keep first image for legacy compatibility
       };
 
-      let error;
+      let propertyId = editProperty?.id;
+
       if (editProperty) {
         // Update existing property
-        const { error: updateError } = await supabase
+        const { error } = await supabase
           .from("properties")
           .update(propertyData)
           .eq('id', editProperty.id);
-        error = updateError;
+
+        if (error) throw error;
+
+        // Delete existing images
+        await supabase
+          .from('property_images')
+          .delete()
+          .eq('property_id', editProperty.id);
       } else {
         // Create new property
-        const { error: insertError } = await supabase
+        const { data, error } = await supabase
           .from("properties")
-          .insert(propertyData);
-        error = insertError;
+          .insert(propertyData)
+          .select()
+          .single();
+
+        if (error) throw error;
+        propertyId = data.id;
       }
 
-      if (error) throw error;
+      // Insert property images
+      if (imageUrls.length > 0 && propertyId) {
+        const imageData = imageUrls.map((url, index) => ({
+          property_id: propertyId,
+          image_url: url,
+          display_order: index,
+          alt_text: `${formData.title} - Image ${index + 1}`
+        }));
+
+        const { error: imageError } = await supabase
+          .from('property_images')
+          .insert(imageData);
+
+        if (imageError) {
+          console.error("Error saving property images:", imageError);
+          toast({
+            title: "Warning",
+            description: "Property saved but some images failed to save",
+            variant: "destructive",
+          });
+        }
+      }
 
       // Reset form only if creating new property
       if (!editProperty) {
@@ -91,8 +157,8 @@ export const PropertyForm = ({ onSuccess, editProperty }: PropertyFormProps) => 
           square_feet: "",
           property_type: "",
           status: "available",
-          image_url: "",
         });
+        setImageUrls([]);
       }
 
       toast({
@@ -215,10 +281,16 @@ export const PropertyForm = ({ onSuccess, editProperty }: PropertyFormProps) => 
         </div>
       </div>
 
-      <PhotoUpload
-        currentImageUrl={formData.image_url}
-        onUploadSuccess={(url) => handleInputChange("image_url", url)}
-      />
+      <div>
+        <Label className="block text-sm font-medium text-foreground mb-2">
+          Property Photos
+        </Label>
+        <PhotoUpload 
+          onUpload={setImageUrls}
+          currentImageUrls={imageUrls}
+          multiple={true}
+        />
+      </div>
 
       <div className="space-y-2">
         <Label htmlFor="description">Description</Label>

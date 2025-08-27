@@ -1,82 +1,103 @@
-import { useState, useEffect } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import React, { useState, useRef, useEffect } from "react";
+import { Upload, X, Camera, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
+import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { Upload, X } from "lucide-react";
 
 interface PhotoUploadProps {
-  onUploadSuccess: (url: string) => void;
-  currentImageUrl?: string;
+  onUpload: (urls: string[]) => void;
+  currentImageUrls?: string[];
+  multiple?: boolean;
 }
 
-export const PhotoUpload = ({ onUploadSuccess, currentImageUrl }: PhotoUploadProps) => {
+export function PhotoUpload({ onUpload, currentImageUrls = [], multiple = true }: PhotoUploadProps) {
   const [uploading, setUploading] = useState(false);
-  const [previewUrl, setPreviewUrl] = useState("");
+  const [previewUrls, setPreviewUrls] = useState<string[]>([]);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
 
-  // Update preview when currentImageUrl changes (for editing)
   useEffect(() => {
-    console.log("PhotoUpload - currentImageUrl:", currentImageUrl);
-    setPreviewUrl(currentImageUrl || "");
-  }, [currentImageUrl]);
-
-  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
-
-    // Validate file type
-    if (!file.type.startsWith('image/')) {
-      toast({
-        title: "Error",
-        description: "Please select an image file",
-        variant: "destructive",
-      });
-      return;
+    if (currentImageUrls.length > 0) {
+      setPreviewUrls(currentImageUrls);
     }
+  }, [currentImageUrls]);
 
-    // Validate file size (max 5MB)
-    if (file.size > 5 * 1024 * 1024) {
-      toast({
-        title: "Error",
-        description: "File size must be less than 5MB",
-        variant: "destructive",
-      });
-      return;
-    }
+  const handleFileSelect = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = event.target.files;
+    if (!files || files.length === 0) return;
+
+    const fileArray = Array.from(files);
+    
+    // Validate files
+    const validFiles = fileArray.filter(file => {
+      if (!file.type.startsWith('image/')) {
+        toast({
+          title: "Invalid file type",
+          description: `${file.name} is not an image file`,
+          variant: "destructive",
+        });
+        return false;
+      }
+      
+      if (file.size > 5 * 1024 * 1024) {
+        toast({
+          title: "File too large",
+          description: `${file.name} is larger than 5MB`,
+          variant: "destructive",
+        });
+        return false;
+      }
+      
+      return true;
+    });
+
+    if (validFiles.length === 0) return;
 
     setUploading(true);
+    const uploadedUrls: string[] = [];
 
     try {
-      // Create unique filename
-      const fileExt = file.name.split('.').pop();
-      const fileName = `property_${Date.now()}.${fileExt}`;
-      const filePath = `properties/${fileName}`;
+      for (const file of validFiles) {
+        const fileExt = file.name.split('.').pop();
+        const fileName = `property_${Date.now()}_${Math.random().toString(36).substr(2, 9)}.${fileExt}`;
+        const filePath = `properties/${fileName}`;
 
-      // Upload file to Supabase Storage
-      const { error: uploadError } = await supabase.storage
-        .from('property-images')
-        .upload(filePath, file);
+        const { data, error } = await supabase.storage
+          .from('property-images')
+          .upload(filePath, file);
 
-      if (uploadError) throw uploadError;
+        if (error) {
+          console.error('Upload error:', error);
+          toast({
+            title: "Upload failed",
+            description: `Failed to upload ${file.name}: ${error.message}`,
+            variant: "destructive",
+          });
+          continue;
+        }
 
-      // Get public URL
-      const { data } = supabase.storage
-        .from('property-images')
-        .getPublicUrl(filePath);
+        const { data: { publicUrl } } = supabase.storage
+          .from('property-images')
+          .getPublicUrl(data.path);
 
-      const imageUrl = data.publicUrl;
-      setPreviewUrl(imageUrl);
-      onUploadSuccess(imageUrl);
+        uploadedUrls.push(publicUrl);
+      }
 
+      if (uploadedUrls.length > 0) {
+        const newPreviewUrls = multiple ? [...previewUrls, ...uploadedUrls] : uploadedUrls;
+        setPreviewUrls(newPreviewUrls);
+        onUpload(newPreviewUrls);
+        
+        toast({
+          title: "Success",
+          description: `${uploadedUrls.length} photo${uploadedUrls.length > 1 ? 's' : ''} uploaded successfully`,
+        });
+      }
+    } catch (error) {
+      console.error('Upload error:', error);
       toast({
-        title: "Success",
-        description: "Image uploaded successfully",
-      });
-    } catch (error: any) {
-      toast({
-        title: "Error",
-        description: error.message || "Failed to upload image",
+        title: "Upload failed",
+        description: "Failed to upload photos",
         variant: "destructive",
       });
     } finally {
@@ -84,63 +105,79 @@ export const PhotoUpload = ({ onUploadSuccess, currentImageUrl }: PhotoUploadPro
     }
   };
 
-  const clearImage = () => {
-    setPreviewUrl("");
-    onUploadSuccess("");
+  const removePhoto = (index: number) => {
+    const newPreviewUrls = previewUrls.filter((_, i) => i !== index);
+    setPreviewUrls(newPreviewUrls);
+    onUpload(newPreviewUrls);
   };
 
   return (
     <div className="space-y-4">
-      <Label htmlFor="photo-upload">Property Photo</Label>
+      <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-6">
+        {previewUrls.length > 0 ? (
+          <div className="space-y-4">
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+              {previewUrls.map((url, index) => (
+                <div key={index} className="relative group">
+                  <img
+                    src={url}
+                    alt={`Property preview ${index + 1}`}
+                    className="w-full h-32 object-cover rounded-md"
+                  />
+                  <Button
+                    variant="destructive"
+                    size="sm"
+                    className="absolute top-1 right-1 h-6 w-6 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
+                    onClick={() => removePhoto(index)}
+                    disabled={uploading}
+                  >
+                    <X className="h-3 w-3" />
+                  </Button>
+                </div>
+              ))}
+            </div>
+            {multiple && (
+              <Button 
+                onClick={() => fileInputRef.current?.click()} 
+                disabled={uploading}
+                variant="outline"
+                className="w-full"
+              >
+                <Plus className="h-4 w-4 mr-2" />
+                Add More Photos
+              </Button>
+            )}
+          </div>
+        ) : (
+          <div className="text-center">
+            <Camera className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
+            <h3 className="text-lg font-medium mb-2">Upload Property Photos</h3>
+            <p className="text-muted-foreground mb-4">
+              {multiple ? 'Select multiple images to upload' : 'Drag and drop your image here, or click to browse'}
+            </p>
+            <Button 
+              onClick={() => fileInputRef.current?.click()} 
+              disabled={uploading}
+              className="mb-2"
+            >
+              <Upload className="h-4 w-4 mr-2" />
+              {uploading ? 'Uploading...' : multiple ? 'Choose Photos' : 'Choose Photo'}
+            </Button>
+            <p className="text-xs text-muted-foreground">
+              PNG, JPG up to 5MB each {multiple ? '(Multiple files supported)' : ''}
+            </p>
+          </div>
+        )}
+      </div>
       
-      {previewUrl ? (
-        <div className="relative">
-          <img
-            src={previewUrl}
-            alt="Property preview"
-            className="w-full h-48 object-cover rounded-lg border"
-          />
-          <Button
-            type="button"
-            variant="destructive"
-            size="sm"
-            className="absolute top-2 right-2"
-            onClick={clearImage}
-          >
-            <X className="h-4 w-4" />
-          </Button>
-        </div>
-      ) : (
-        <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-6 text-center">
-          <Upload className="mx-auto h-8 w-8 text-muted-foreground" />
-          <p className="mt-2 text-sm text-muted-foreground">
-            Click to upload or drag and drop
-          </p>
-          <p className="text-xs text-muted-foreground">
-            PNG, JPG, GIF up to 5MB
-          </p>
-        </div>
-      )}
-
       <input
-        id="photo-upload"
+        ref={fileInputRef}
         type="file"
         accept="image/*"
-        onChange={handleFileUpload}
-        disabled={uploading}
+        multiple={multiple}
+        onChange={handleFileSelect}
         className="hidden"
       />
-      
-      <Button
-        type="button"
-        variant="outline"
-        onClick={() => document.getElementById('photo-upload')?.click()}
-        disabled={uploading}
-        className="w-full"
-      >
-        <Upload className="h-4 w-4 mr-2" />
-        {uploading ? "Uploading..." : "Choose Photo"}
-      </Button>
     </div>
   );
-};
+}

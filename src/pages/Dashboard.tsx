@@ -35,7 +35,15 @@ const Dashboard = () => {
     try {
       const { data, error } = await supabase
         .from("properties")
-        .select("*")
+        .select(`
+          *,
+          property_images (
+            id,
+            image_url,
+            display_order,
+            alt_text
+          )
+        `)
         .order("created_at", { ascending: false });
 
       if (error) throw error;
