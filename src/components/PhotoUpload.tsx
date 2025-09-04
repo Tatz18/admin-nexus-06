@@ -94,6 +94,13 @@ export function PhotoUpload({ onUpload, currentImageUrls = [], multiple = true }
           title: "Success",
           description: `${uploadedUrls.length} photo${uploadedUrls.length > 1 ? 's' : ''} uploaded successfully`,
         });
+      } else if (validFiles.length > 0) {
+        // Show error only if we had valid files but none uploaded successfully
+        toast({
+          title: "Upload failed",
+          description: "No photos were uploaded successfully",
+          variant: "destructive",
+        });
       }
     } catch (error) {
       console.error('Upload error:', error);
