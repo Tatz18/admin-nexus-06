@@ -22,9 +22,12 @@ const Dashboard = () => {
   const { isAuthenticated, signOut } = useSimpleAuth();
 
   useEffect(() => {
+    console.log("Dashboard: Auth status changed:", isAuthenticated);
     if (!isAuthenticated) {
+      console.log("Dashboard: Not authenticated, redirecting to auth");
       navigate("/auth");
     } else {
+      console.log("Dashboard: Authenticated, fetching data");
       fetchProperties();
       fetchBlogs();
     }
