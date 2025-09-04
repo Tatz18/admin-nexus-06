@@ -11,21 +11,28 @@ interface PhotoUploadProps {
 }
 
 export function PhotoUpload({ onUpload, currentImageUrls = [], multiple = true }: PhotoUploadProps) {
+  console.log('PhotoUpload: Component rendered with currentImageUrls:', currentImageUrls);
   const [uploading, setUploading] = useState(false);
   const [previewUrls, setPreviewUrls] = useState<string[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
 
   useEffect(() => {
+    console.log('PhotoUpload: useEffect triggered with currentImageUrls:', currentImageUrls);
     if (currentImageUrls.length > 0) {
       setPreviewUrls(currentImageUrls);
     }
   }, [currentImageUrls]);
 
   const handleFileSelect = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    console.log('PhotoUpload: handleFileSelect triggered', event);
     const files = event.target.files;
-    if (!files || files.length === 0) return;
+    if (!files || files.length === 0) {
+      console.log('PhotoUpload: No files selected, returning early');
+      return;
+    }
 
+    console.log('PhotoUpload: Files selected:', files.length);
     const fileArray = Array.from(files);
     
     // Validate files
