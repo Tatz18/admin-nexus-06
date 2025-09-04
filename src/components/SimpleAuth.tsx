@@ -27,34 +27,20 @@ export const SimpleAuthProvider = ({ children }: { children: React.ReactNode }) 
   useEffect(() => {
     // Check if user was previously authenticated (stored in localStorage)
     const authStatus = localStorage.getItem("phoenix-admin-auth");
-    console.log("SimpleAuth: Checking auth status:", authStatus);
     if (authStatus === "true") {
       setIsAuthenticated(true);
-      console.log("SimpleAuth: User authenticated");
     }
 
     // Listen for localStorage changes (for when login happens in another tab or component)
-    const handleStorageChange = () => {
-      const authStatus = localStorage.getItem("phoenix-admin-auth");
-      console.log("SimpleAuth: Storage change detected, auth status:", authStatus);
-      setIsAuthenticated(authStatus === "true");
+    const handleStorageChange = (e: StorageEvent) => {
+      // Only respond to changes to our specific auth key
+      if (e.key === "phoenix-admin-auth") {
+        setIsAuthenticated(e.newValue === "true");
+      }
     };
 
     window.addEventListener("storage", handleStorageChange);
-    
-    // Also listen for focus events to recheck auth status
-    const handleFocus = () => {
-      const authStatus = localStorage.getItem("phoenix-admin-auth");
-      console.log("SimpleAuth: Window focus, checking auth:", authStatus);
-      setIsAuthenticated(authStatus === "true");
-    };
-    
-    window.addEventListener("focus", handleFocus);
-    
-    return () => {
-      window.removeEventListener("storage", handleStorageChange);
-      window.removeEventListener("focus", handleFocus);
-    };
+    return () => window.removeEventListener("storage", handleStorageChange);
   }, []);
 
   const login = (email: string, password: string): boolean => {

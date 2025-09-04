@@ -23,15 +23,10 @@ export function PhotoUpload({ onUpload, currentImageUrls = [], multiple = true }
   }, [currentImageUrls]);
 
   const handleFileSelect = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    console.log('PhotoUpload: File select started');
     const files = event.target.files;
-    if (!files || files.length === 0) {
-      console.log('PhotoUpload: No files selected');
-      return;
-    }
+    if (!files || files.length === 0) return;
 
     const fileArray = Array.from(files);
-    console.log('PhotoUpload: Files selected:', fileArray.length);
     
     // Validate files
     const validFiles = fileArray.filter(file => {
@@ -72,8 +67,6 @@ export function PhotoUpload({ onUpload, currentImageUrls = [], multiple = true }
         const { data, error } = await supabase.storage
           .from('property-images')
           .upload(filePath, file);
-
-        console.log('PhotoUpload: Upload result for', file.name, '- Data:', data, 'Error:', error);
 
         if (error) {
           console.error('Upload error:', error);

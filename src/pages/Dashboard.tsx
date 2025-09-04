@@ -22,17 +22,15 @@ const Dashboard = () => {
   const { isAuthenticated, signOut } = useSimpleAuth();
 
   useEffect(() => {
-    console.log("Dashboard: Auth status changed:", isAuthenticated);
-    if (!isAuthenticated) {
-      console.log("Dashboard: Not authenticated, redirecting to auth");
+    // Only redirect if we've finished initial loading and are definitely not authenticated
+    if (!dashboardLoading && !isAuthenticated) {
       navigate("/auth");
-    } else {
-      console.log("Dashboard: Authenticated, fetching data");
+    } else if (isAuthenticated) {
       fetchProperties();
       fetchBlogs();
     }
     setDashboardLoading(false);
-  }, [isAuthenticated, navigate]);
+  }, [isAuthenticated, navigate, dashboardLoading]);
 
   const fetchProperties = async () => {
     try {
