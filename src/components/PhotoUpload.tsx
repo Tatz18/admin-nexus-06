@@ -154,7 +154,11 @@ export function PhotoUpload({ onUpload, currentImageUrls = [], multiple = true }
             </div>
             {multiple && (
               <Button 
-                onClick={() => fileInputRef.current?.click()} 
+                onClick={(e) => {
+                  e.preventDefault();
+                  console.log('PhotoUpload: Add More button clicked');
+                  fileInputRef.current?.click();
+                }} 
                 disabled={uploading}
                 variant="outline"
                 className="w-full"
@@ -172,7 +176,11 @@ export function PhotoUpload({ onUpload, currentImageUrls = [], multiple = true }
               {multiple ? 'Select multiple images to upload' : 'Drag and drop your image here, or click to browse'}
             </p>
             <Button 
-              onClick={() => fileInputRef.current?.click()} 
+              onClick={(e) => {
+                e.preventDefault();
+                console.log('PhotoUpload: Button clicked, triggering file input');
+                fileInputRef.current?.click();
+              }} 
               disabled={uploading}
               className="mb-2"
             >
@@ -193,6 +201,7 @@ export function PhotoUpload({ onUpload, currentImageUrls = [], multiple = true }
         multiple={multiple}
         onChange={handleFileSelect}
         className="hidden"
+        key={Date.now()} // Force re-render to clear previous selections
       />
     </div>
   );
