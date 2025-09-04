@@ -23,10 +23,15 @@ export function PhotoUpload({ onUpload, currentImageUrls = [], multiple = true }
   }, [currentImageUrls]);
 
   const handleFileSelect = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    console.log('PhotoUpload: File select started');
     const files = event.target.files;
-    if (!files || files.length === 0) return;
+    if (!files || files.length === 0) {
+      console.log('PhotoUpload: No files selected');
+      return;
+    }
 
     const fileArray = Array.from(files);
+    console.log('PhotoUpload: Files selected:', fileArray.length);
     
     // Validate files
     const validFiles = fileArray.filter(file => {
@@ -53,11 +58,13 @@ export function PhotoUpload({ onUpload, currentImageUrls = [], multiple = true }
 
     if (validFiles.length === 0) return;
 
+    console.log('PhotoUpload: Starting upload process, valid files:', validFiles.length);
     setUploading(true);
     const uploadedUrls: string[] = [];
 
     try {
       for (const file of validFiles) {
+        console.log('PhotoUpload: Uploading file:', file.name);
         const fileExt = file.name.split('.').pop();
         const fileName = `property_${Date.now()}_${Math.random().toString(36).substr(2, 9)}.${fileExt}`;
         const filePath = `properties/${fileName}`;
@@ -65,6 +72,8 @@ export function PhotoUpload({ onUpload, currentImageUrls = [], multiple = true }
         const { data, error } = await supabase.storage
           .from('property-images')
           .upload(filePath, file);
+
+        console.log('PhotoUpload: Upload result for', file.name, '- Data:', data, 'Error:', error);
 
         if (error) {
           console.error('Upload error:', error);
