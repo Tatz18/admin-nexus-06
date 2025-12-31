@@ -101,7 +101,7 @@ const Dashboard = () => {
           <div className="flex flex-col">
             <div className="bg-white/5 p-1 rounded-lg inline-block">
               <img 
-                src="/lovable-uploads/d61cc3d8-5271-4eb9-92c5-efdda9c24652.png" 
+                src="/lovable-uploads/ph-logo.png" 
                 alt="Phoenix Realesthatic" 
                 className="h-30 w-auto max-w-sm"
                 onError={(e) => {
