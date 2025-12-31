@@ -246,15 +246,15 @@ const Dashboard = () => {
                 setEditingBlog(null);
               }}>
                 <Plus className="h-4 w-4 mr-2" />
-                {showBlogForm ? "Hide Form" : "Add Blog"}
+                {showBlogForm ? "Hide Blog Form" : "Add Blog"}
               </Button>
             </div>
-            {(showBlogForm || editingBlog) && (
+            {activeTab === "blogs" && (showBlogForm || editingBlog) && (
               <div>
                 <h3 className="text-lg font-semibold mb-4">
                   {editingBlog ? "Edit Blog" : "Add New Blog"}
                 </h3>
-                <BlogForm 
+                <BlogForm
                   editBlog={editingBlog}
                   onSuccess={() => {
                     setShowBlogForm(false);
