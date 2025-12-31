@@ -18,7 +18,7 @@ const Dashboard = () => {
   const [dashboardLoading, setDashboardLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [editingProperty, setEditingProperty] = useState<any>(null);
-  const [blogs, setBlogs] = useState<any>([]);
+  const [blogs, setBlogs] = useState<any[]>([]);
   const [showBlogForm, setShowBlogForm] = useState(false);
   const [editingBlog, setEditingBlog] = useState<any>(null);
   const [previewBlog, setPreviewBlog] = useState<any>(null);
