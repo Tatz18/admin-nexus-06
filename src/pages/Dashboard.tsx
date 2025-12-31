@@ -204,7 +204,7 @@ const Dashboard = () => {
                 setEditingProperty(null);
               }}>
                 <Plus className="h-4 w-4 mr-2" />
-                {showForm ? "Hide Form" : "Add Property"}
+                {showForm ? "Hide Property Form" : "Add Property"}
               </Button>
             </div>
 
