@@ -5,8 +5,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import ReactQuill from "react-quill";
-import "react-quill/dist/quill.snow.css";
+//import ReactQuill from "react-quill";
+//import "react-quill/dist/quill.snow.css";
 import { supabase } from "@/integrations/supabase/client";
 
 interface BlogFormProps {
@@ -82,6 +82,7 @@ export const BlogForm = ({ onSuccess, editBlog }: BlogFormProps) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
+  /*
   const isQuillEmpty = (value: string) => {
     return (
       !value ||
@@ -89,6 +90,7 @@ export const BlogForm = ({ onSuccess, editBlog }: BlogFormProps) => {
       value.replace(/<(.|\n)*?>/g, "").trim().length === 0
     );
   };
+  */
 
   const uploadBlogImage = async (file: File): Promise<string> => {
     const fileExt = file.name.split(".").pop();
@@ -224,14 +226,12 @@ export const BlogForm = ({ onSuccess, editBlog }: BlogFormProps) => {
       {/* Content */}
       <div className="space-y-2">
         <Label>Blog Content</Label>
-        <ReactQuill
-          theme="snow"
+        <Textarea
+          id="excerpt"
           value={formData.content}
-          onChange={(value) => handleChange("content", value)}
-          modules={quillModules}
-          placeholder="Write your blog content here..."
-          className="bg-background"
-      
+          onChange={(e) => handleChange("content", e.target.value)}
+          placeholder="Enter content"
+          className="min-h-[120px]"
         />
       </div>
       <div className="space-y-2">
@@ -309,3 +309,4 @@ export const BlogForm = ({ onSuccess, editBlog }: BlogFormProps) => {
     </form>
   );
 };
+
