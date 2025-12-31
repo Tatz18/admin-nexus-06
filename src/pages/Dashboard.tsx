@@ -7,6 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import { PropertyForm } from "@/components/PropertyForm";
 import { PropertyList } from "@/components/PropertyList";
+import { BlogForm } from "@/components/BlogForm";
 import { useSimpleAuth } from "@/components/SimpleAuth";
 import { Plus, Home, FileText, LogOut, Calendar, Eye, Edit, Trash2 } from "lucide-react";
 
@@ -17,6 +18,8 @@ const Dashboard = () => {
   const [dashboardLoading, setDashboardLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [editingProperty, setEditingProperty] = useState<any>(null);
+  const [showBlogForm, setShowBlogForm] = useState(false);
+  const [editingBlog, setEditingBlog] = useState<any>(null);
   const navigate = useNavigate();
   const { toast } = useToast();
   const { isAuthenticated, signOut } = useSimpleAuth();
@@ -239,11 +242,26 @@ const Dashboard = () => {
                 <h2 className="text-xl font-semibold">Blog Management</h2>
                 <p className="text-muted-foreground">Create and manage blog posts</p>
               </div>
-              <Button>
+              <Button onClick={() => {setShowBlogForm(!showBlogForm); setEditingBlog(null);}}>
                 <Plus className="h-4 w-4 mr-2" />
-                Add Blog Post
+                {showBlogForm ? "Hide Form" : "Add Blog"}
               </Button>
             </div>
+            {(showBlogForm || editingBlog) && (
+              <div>
+                <h3 className="text-lg font-semibold mb-4">
+                  {editingBlog ? "Edit Blog" : "Add New Blog"}
+                </h3>
+                <BlogForm 
+                  editBlog={editingBlog}
+                  onSuccess={() => {
+                    setShowBlogForm(false);
+                    setEditingBlog(null);
+                    fetchBlogs();
+                  }} 
+                />
+              </div>
+            )}
 
             <Card>
               <CardHeader>
