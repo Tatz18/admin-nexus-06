@@ -13,7 +13,7 @@ const Index = () => {
           <div className="flex items-center gap-2">
             <div className="bg-white/10 p-1 rounded-lg">
               <img 
-                src="/lovable-uploads/d61cc3d8-5271-4eb9-92c5-efdda9c24652.png" 
+                src="/lovable-uploads/ph-logo.png" 
                 alt="Phoenix Realesthatic" 
                 className="h-30 w-auto max-w-md"
                 onError={(e) => {
@@ -64,8 +64,7 @@ const Index = () => {
             </CardHeader>
             <CardContent>
               <CardDescription>
-                Add, edit, and manage your property listings with detailed information,
-                images, and pricing.
+                Add, edit, and manage your property listings with detailed information, images, and pricing.
               </CardDescription>
             </CardContent>
           </Card>
@@ -79,8 +78,7 @@ const Index = () => {
             </CardHeader>
             <CardContent>
               <CardDescription>
-                Create and manage blog posts to engage with your audience and
-                improve SEO.
+                Create and manage blog posts to engage with your audience and improve SEO.
               </CardDescription>
             </CardContent>
           </Card>
@@ -94,8 +92,7 @@ const Index = () => {
             </CardHeader>
             <CardContent>
               <CardDescription>
-                Track property performance, visitor statistics, and business
-                metrics in real-time.
+                Track property performance, visitor statistics, and business metrics in real-time.
               </CardDescription>
             </CardContent>
           </Card>
