@@ -239,16 +239,33 @@ const Dashboard = () => {
                     <p className="text-muted-foreground">Start by creating your first blog post.</p>
                   </div>
                 ) : (
-                  <div className="space-y-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                     {blogs.map((blog) => (
-                      <div key={blog.id} className="flex items-center justify-between p-4 border rounded-lg">
+                      <div key={blog.id} className="relative border rounded-lg p-4 flex flex-col justify-between overflow-hidden">
+                        <div className={`absolute top-6 right-[-48px] w-40 text-center transform rotate-45 text-xs font-bold shadow-lg ${statusConfig[blog.status].className}`}>
+                          {statusConfig[blog.status].label}
+                        </div>
+                        {blog.featured_image_url && (
+                          <div className="bg-muted rounded-md mb-3 h-48 flex items-center justify-center">
+                            <img
+                              src={blog.featured_image_url}
+                              alt={blog.title}
+                              className="max-h-full max-w-full object-contain rounded-md"
+                            />
+                          </div>
+                        )}
                         <div>
-                          <h4 className="font-medium">{blog.title}</h4>
-                          <p className="text-sm text-muted-foreground">
+                          <h1 className="font-medium">{blog.title}</h1>
+                          <p className="text-sm text-muted-foreground flex items-center">
+                            <Calendar className="h-4 w-4 mr-1" />
                             {new Date(blog.created_at).toLocaleDateString()}
                           </p>
                         </div>
-                        <Button variant="outline" size="sm">Edit</Button>
+                        <div className="grid grid-cols-3 gap-3 py-2 place-items-center">
+                          <Button variant="outline" size="sm"><Eye className="h-4 w-4" /></Button>
+                          <Button variant="outline" size="sm"><Edit className="h-4 w-4" /></Button>
+                          <Button variant="outline" size="sm"><Trash2 className="h-4 w-4" /></Button>
+                        </div>
                       </div>
                     ))}
                   </div>
