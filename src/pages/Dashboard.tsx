@@ -7,42 +7,19 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import { PropertyForm } from "@/components/PropertyForm";
 import { PropertyList } from "@/components/PropertyList";
-import { BlogForm } from "@/components/BlogForm";
 import { useSimpleAuth } from "@/components/SimpleAuth";
-import { Plus, Home, FileText, LogOut, Calendar, Eye, Edit, Trash2, XCircle } from "lucide-react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Plus, Home, FileText, LogOut } from "lucide-react";
 
 const Dashboard = () => {
   const [properties, setProperties] = useState<any[]>([]);
+  const [blogs, setBlogs] = useState<any[]>([]);
   const [activeTab, setActiveTab] = useState("properties");
   const [dashboardLoading, setDashboardLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [editingProperty, setEditingProperty] = useState<any>(null);
-  const [blogs, setBlogs] = useState<any[]>([]);
-  const [showBlogForm, setShowBlogForm] = useState(false);
-  const [editingBlog, setEditingBlog] = useState<any>(null);
-  const [previewBlog, setPreviewBlog] = useState<any>(null);
   const navigate = useNavigate();
   const { toast } = useToast();
   const { isAuthenticated, signOut } = useSimpleAuth();
-  const [loading, setLoading] = useState<string | null>(null);
-  const statusConfig = {
-    published: {
-      label: "Published",
-      className: "bg-green-100 text-green-700 border-green-300",
-      dot: "bg-green-600",
-    },
-    draft: {
-      label: "Draft",
-      className: "bg-yellow-100 text-yellow-700 border-yellow-300",
-      dot: "bg-yellow-500",
-    },
-    archived: {
-      label: "Archived",
-      className: "bg-gray-100 text-gray-700 border-gray-300",
-      dot: "bg-gray-500",
-    },
-  } as const;
 
   useEffect(() => {
     // Only redirect if we've finished initial loading and are definitely not authenticated
@@ -93,61 +70,6 @@ const Dashboard = () => {
     } catch (error: any) {
       console.log("Blog fetch error (table might not exist):", error);
       setBlogs([]);
-    }
-  };
-
-  const handleBlogDelete = async (id: string) => {
-    if (!confirm("Are you sure you want to delete this blog?")) return;
-
-    setLoading(id);
-    try {
-      // Get blog data for storage cleanup
-      const { data: blog, error: fetchError } = await supabase
-        .from("blogs")
-        .select("featured_image_url")
-        .eq("id", id)
-        .single();
-      
-        if(fetchError){
-          console.error("Error fetching blog:", fetchError);
-        }      
-        // Clean up storage file if exists
-        if (blog?.featured_image_url) {
-          try {
-            const url = blog.featured_image_url.split('/storage/v1/object/public/blogs/');
-            const filePath = url[1];
-          
-            await supabase.storage
-              .from('blogs')
-              .remove([filePath]);
-          } catch (storageError) {
-            console.warn("Storage cleanup failed:", storageError);
-          }
-        }
-
-      // Delete blog from database
-      const { error } = await supabase
-        .from('blogs')
-        .delete()
-        .eq('id', id);
-
-      if (error) {
-        throw new Error(error.message || 'Failed to delete Blog');
-      }    
-
-      toast({
-        title: "Success",
-        description: "Blog deleted successfully",
-      });
-      fetchBlogs();
-    } catch (error: any) {
-      toast({
-        title: "Error",
-        description: error.message,
-        variant: "destructive",
-      });
-    } finally {
-      setLoading(null);
     }
   };
 
@@ -298,129 +220,12 @@ const Dashboard = () => {
                 <h2 className="text-xl font-semibold">Blog Management</h2>
                 <p className="text-muted-foreground">Create and manage blog posts</p>
               </div>
-              <Button onClick={() => {
-                setShowBlogForm(!showBlogForm); 
-                setEditingBlog(null);
-              }}>
+              <Button>
                 <Plus className="h-4 w-4 mr-2" />
-                {showBlogForm ? "Hide Form" : "Add Blog"}
+                Add Blog Post
               </Button>
             </div>
-            {(showBlogForm || editingBlog) && (
-              <div>
-                <h3 className="text-lg font-semibold mb-4">
-                  {editingBlog ? "Edit Blog" : "Add New Blog"}
-                </h3>
-                <BlogForm 
-                  editBlog={editingBlog}
-                  onSuccess={() => {
-                    setShowBlogForm(false);
-                    setEditingBlog(null);
-                    fetchBlogs();
-                  }} 
-                />
-              </div>
-            )}
 
-        <Dialog open={!!previewBlog} onOpenChange={() => setPreviewBlog(null)}>
-          <DialogContent className="max-w-5xl max-h-[90vh] overflow-y-auto p-0">
-            {previewBlog && (
-              <div className="bg-background rounded-xl shadow-lg">
-                {/* ===== Sticky Header ===== */}
-                <DialogHeader className="sticky top-0 z-50 bg-background border-b px-6 py-4">
-                  <div className="flex items-start justify-between gap-4">
-
-                    {/* Title */}
-                    <DialogTitle className="text-2xl font-bold leading-tight pr-32">
-                      {previewBlog?.title}
-                    </DialogTitle>
-
-                    {/* Right Actions */}
-                    {previewBlog && (
-                      <div className="absolute top-4 right-6 flex items-center gap-2">
-                        
-                        {/* Status */}
-                        <span
-                          className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold border
-                            ${statusConfig[previewBlog.status].className}`}
-                        >
-                          <span
-                            className={`w-2 h-2 rounded-full ${statusConfig[previewBlog.status].dot}`}
-                          />
-                          {statusConfig[previewBlog.status].label}
-                        </span>
-
-                        {/* Close Button */}
-                        <button
-                          onClick={() => setPreviewBlog(null)}
-                          className="rounded-md p-1.5 text-muted-foreground hover:text-foreground hover:bg-muted transition"
-                          aria-label="Close"
-                        >
-                          <XCircle />
-                        </button>
-                      </div>
-                    )}
-
-                  </div>
-                </DialogHeader>
-
-                {/* Featured Image */}
-                {previewBlog.featured_image_url && (
-                  <div className="relative overflow-hidden rounded-lg border bg-muted">
-                    <img
-                      src={previewBlog.featured_image_url}
-                      alt={previewBlog.title}
-                      className="w-full h-auto object-contain"
-                    />
-                  </div>
-                )}
-
-                {/* Body */}
-                <div className="p-3 space-y-3">
-                  <h1 className="text-3xl font-bold tracking-tight leading-tight">
-                    {previewBlog.title}
-                  </h1>
-                  {/* Slug */}
-                  <div className="flex items-center gap-3 text-sm">
-                    <code className="bg-muted px-3 py-1 rounded-md text-xs">
-                      {previewBlog.slug}
-                    </code>
-                  </div>
-
-                  {/* Subtitle */}
-                  {previewBlog.excerpt && (
-                    <p className="text-lg text-muted-foreground leading-relaxed max-w-3xl">
-                      {previewBlog.excerpt}
-                    </p>
-                  )}
-
-                  {/* ===== Divider ===== */}
-                  <div className="border-t" />
-
-                  {/* Content */}
-                  <div>
-                    <div
-                      className="prose prose-neutral dark:prose-invert max-w-none leading-relaxed"
-                      dangerouslySetInnerHTML={{ __html: previewBlog.content }}
-                    />
-                  </div>
-
-                  {/* Footer Meta */}
-                  <div className="border-t pt-4 flex flex-col sm:flex-row gap-4 text-sm text-muted-foreground">
-                    <span className="flex items-center gap-2">
-                      <Calendar className="h-4 w-4" />
-                      Created {new Date(previewBlog.created_at).toLocaleDateString()}
-                    </span>
-                    <span>
-                      Updated {new Date(previewBlog.updated_at).toLocaleDateString()}
-                    </span>
-                  </div>
-
-                </div>
-              </div>
-            )}
-          </DialogContent>
-        </Dialog>
             <Card>
               <CardHeader>
                 <CardTitle>Blog Posts</CardTitle>
@@ -434,62 +239,16 @@ const Dashboard = () => {
                     <p className="text-muted-foreground">Start by creating your first blog post.</p>
                   </div>
                 ) : (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                  <div className="space-y-4">
                     {blogs.map((blog) => (
-                      <div key={blog.id} className="relative border rounded-lg p-4 flex flex-col justify-between overflow-hidden">
-                        <div className={`absolute top-6 right-[-48px] w-40 text-center transform rotate-45 text-xs font-bold shadow-lg ${statusConfig[blog.status].className}`}>
-                          {statusConfig[blog.status].label}
-                        </div>
-                        
-                        {blog.featured_image_url && (
-                          <div className="bg-muted rounded-md mb-3 h-48 flex items-center justify-center">
-                          <img
-                            src={blog.featured_image_url}
-                            alt={blog.title}
-                            className="max-h-full max-w-full object-contain rounded-md"
-                          />
-                          </div>
-                        )}
-
+                      <div key={blog.id} className="flex items-center justify-between p-4 border rounded-lg">
                         <div>
-                          <h1 className="font-medium">{blog.title}</h1>
-                          <p className="text-sm text-muted-foreground flex items-center">
-                            <Calendar className="h-4 w-4 mr-1" />
+                          <h4 className="font-medium">{blog.title}</h4>
+                          <p className="text-sm text-muted-foreground">
                             {new Date(blog.created_at).toLocaleDateString()}
                           </p>
                         </div>
-                        <div className="grid grid-cols-3 gap-3 py-2 place-items-center">
-                          <Button
-                            variant="outline"
-                            size="icon"
-                            onClick={() => setPreviewBlog(blog)}
-                            disabled={!blog.featured_image_url && !blog.content}
-                          >
-                            <Eye className="h-4 w-4" />
-                          </Button>
-
-                          <Button
-                            variant="outline"
-                            size="icon"
-                            onClick={() => {
-                              setEditingBlog(blog);
-                              setShowBlogForm(true);
-                            }}
-                          >
-                            <Edit className="h-4 w-4" />
-                          </Button>
-
-                          <Button
-                            variant="destructive"
-                            size="icon"
-                            onClick={() => handleBlogDelete(blog.id)}
-                            disabled={loading === blog.id}
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
-                        </div>
-
-                        
+                        <Button variant="outline" size="sm">Edit</Button>
                       </div>
                     ))}
                   </div>
