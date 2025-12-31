@@ -31,6 +31,7 @@ interface BlogFormState {
   status: "draft" | "published" | "archived";
 }
 
+/*
 const quillModules = {
   toolbar: [
     [{ header: [1, 2, 3, false] }],
@@ -41,6 +42,7 @@ const quillModules = {
     ["clean"],
   ],
 };
+*/
 
 export const BlogForm = ({ onSuccess, editBlog }: BlogFormProps) => {
   const { toast } = useToast();
@@ -115,6 +117,7 @@ export const BlogForm = ({ onSuccess, editBlog }: BlogFormProps) => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    /*
     if (isQuillEmpty(formData.content)) {
       toast({
         title: "Content required",
@@ -123,6 +126,7 @@ export const BlogForm = ({ onSuccess, editBlog }: BlogFormProps) => {
       });
       return;
     }
+    */
 
     setLoading(true);
 
@@ -309,4 +313,5 @@ export const BlogForm = ({ onSuccess, editBlog }: BlogFormProps) => {
     </form>
   );
 };
+
 
