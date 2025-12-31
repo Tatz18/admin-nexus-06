@@ -42,7 +42,6 @@ const Dashboard = () => {
     },
   } as const;
   
-
   useEffect(() => {
     // Only redirect if we've finished initial loading and are definitely not authenticated
     if (!dashboardLoading && !isAuthenticated) {
@@ -242,7 +241,10 @@ const Dashboard = () => {
                 <h2 className="text-xl font-semibold">Blog Management</h2>
                 <p className="text-muted-foreground">Create and manage blog posts</p>
               </div>
-              <Button onClick={() => {setShowBlogForm(!showBlogForm); setEditingBlog(null);}}>
+              <Button onClick={() => {
+                setShowBlogForm(!showBlogForm); 
+                setEditingBlog(null);
+              }}>
                 <Plus className="h-4 w-4 mr-2" />
                 {showBlogForm ? "Hide Form" : "Add Blog"}
               </Button>
