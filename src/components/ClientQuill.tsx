@@ -6,10 +6,17 @@ const ClientQuill = (props: any) => {
   const [Quill, setQuill] = useState<QuillComponent | null>(null);
 
   useEffect(() => {
+    let mounted = true;
 
     import("react-quill").then((mod) => {
-      setQuill(() => mod.default);
+      if (mounted) {
+        setQuill(() => mod.default);
+      }
     });
+
+    return () => {
+      mounted = false;
+    };
   }, []);
 
   if (!Quill) {
@@ -24,4 +31,3 @@ const ClientQuill = (props: any) => {
 };
 
 export default ClientQuill;
-
