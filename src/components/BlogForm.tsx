@@ -7,6 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useToast } from "@/hooks/use-toast";
 //import ReactQuill from "react-quill";
 //import "react-quill/dist/quill.snow.css";
+import ClientQuill from "@/components/ClientQuill";
 import { supabase } from "@/integrations/supabase/client";
 
 interface BlogFormProps {
@@ -230,12 +231,13 @@ export const BlogForm = ({ onSuccess, editBlog }: BlogFormProps) => {
       {/* Content */}
       <div className="space-y-2">
         <Label>Blog Content</Label>
-        <Textarea
-          id="excerpt"
+        <ClientQuill
+          theme="snow"
           value={formData.content}
-          onChange={(e) => handleChange("content", e.target.value)}
-          placeholder="Enter content"
-          className="min-h-[120px]"
+          onChange={(value: string) => handleChange("content", value)}
+          modules={quillModules}
+          placeholder="Write your blog content here..."
+          className="bg-background"
         />
       </div>
       <div className="space-y-2">
@@ -313,5 +315,6 @@ export const BlogForm = ({ onSuccess, editBlog }: BlogFormProps) => {
     </form>
   );
 };
+
 
 
