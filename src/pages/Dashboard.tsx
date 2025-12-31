@@ -8,7 +8,7 @@ import { useToast } from "@/hooks/use-toast";
 import { PropertyForm } from "@/components/PropertyForm";
 import { PropertyList } from "@/components/PropertyList";
 import { useSimpleAuth } from "@/components/SimpleAuth";
-import { Plus, Home, FileText, LogOut } from "lucide-react";
+import { Plus, Home, FileText, LogOut, Calendar, Eye, Edit, Trash2 } from "lucide-react";
 
 const Dashboard = () => {
   const [properties, setProperties] = useState<any[]>([]);
@@ -20,6 +20,25 @@ const Dashboard = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const { isAuthenticated, signOut } = useSimpleAuth();
+
+  const statusConfig = {
+    published: {
+      label: "Published",
+      className: "bg-green-100 text-green-700 border-green-300",
+      dot: "bg-green-600",
+    },
+    draft: {
+      label: "Draft",
+      className: "bg-yellow-100 text-yellow-700 border-yellow-300",
+      dot: "bg-yellow-500",
+    },
+    archived: {
+      label: "Archived",
+      className: "bg-gray-100 text-gray-700 border-gray-300",
+      dot: "bg-gray-500",
+    },
+  } as const;
+  
 
   useEffect(() => {
     // Only redirect if we've finished initial loading and are definitely not authenticated
@@ -264,7 +283,7 @@ const Dashboard = () => {
                         <div className="grid grid-cols-3 gap-3 py-2 place-items-center">
                           <Button variant="outline" size="sm"><Eye className="h-4 w-4" /></Button>
                           <Button variant="outline" size="sm"><Edit className="h-4 w-4" /></Button>
-                          <Button variant="outline" size="sm"><Trash2 className="h-4 w-4" /></Button>
+                          <Button variant="destructive" size="sm"><Trash2 className="h-4 w-4" /></Button>
                         </div>
                       </div>
                     ))}
